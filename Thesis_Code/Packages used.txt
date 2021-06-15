@@ -1,0 +1,6 @@
+opencv-python
+imutils
+tensorflow
+pysimplegui
+matplotlib
+scipy
