@@ -21,16 +21,14 @@ def generate_store_dataset(selected_dataset):
 
     img_width = 50  # x,y size of generated images
     img_height = 50
-    font_name_array = ['arial', 'times', 'bahnschrift', 'cambria', 'constan', 'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic']
+    font_name_array = ['arial', 'times', 'bahnschrift', 'cambria', 'constan', 'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic'] #List of fonts used
     font_size = 35  # Font size of each alphanumeric
-    letter_repetitions = 1 # Repetitions of letters that are hard to detect (Ex. AA, VV, etc.) - MAX 2, EXPONENTIAL
 
     # Unicode Greek Letter Codes = 902-974 (Includes a couple of empty codes!)
     # https://www.ssec.wisc.edu/~tomw/java/unicode.html#x0370
 
     letters = [] # Letter codes
     letters_in_image = []
-    lowercase_letters = []  # Lowercase letter codes
     directory_letters = []
 
     # ----------------LATIN CAPITAL----------------------
@@ -95,31 +93,14 @@ def generate_store_dataset(selected_dataset):
 
     # ------------------------------------------------
     
-    # if(selected_dataset == 'Special_chars'): # NOT CURRENTLY USED
-
-    #     letters.append('dash')
-    #     directory_letters.append('dash')
-    #     letters_in_image.append(chr(45))
-
-    #     letters.append('dot')
-    #     directory_letters.append('dot')
-    #     letters_in_image.append(chr(46))
-
-    #     letters.append('slash')
-    #     directory_letters.append('slash')
-    #     letters_in_image.append(chr(47))
-
-    #     letters.append('colon')
-    #     directory_letters.append('colon')
-    #     letters_in_image.append(chr(58))
-
-    # ------------------------------------------------
 
     try:
+        #Checking if a database folder exists.
         shutil.rmtree(dataset_directory_root)
     except:
         print('There was no dataset directory to reset - creating it now.')
 
+    #Creating the database folder.
     os.mkdir(dataset_directory_root)
 
     for l in range (0, len(letters)):  # For each character combination...
@@ -146,13 +127,11 @@ def generate_store_dataset(selected_dataset):
 
             counter = counter + 1
 
-  
-    # return
 
     TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)
 
 
-def Augment_Image(image):
+def Augment_Image(image): #Formating and centering the character images
 
     cv2Image = np.array(image)
     cv2Image = cv2.cvtColor(cv2Image, cv2.COLOR_RGB2BGR)
@@ -164,12 +143,13 @@ def Augment_Image(image):
     kernel = np.ones((13,13),np.uint8)
     closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
-    
+    #Detecting contours inside the images.
     cnts, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 
     for c in cnts:
 
+      #Bounding the contours into a rectangle, then expanding the rectangle.
       (x, y, w, h) = cv2.boundingRect(c)
       x = x-3
       y = y-3
@@ -183,18 +163,14 @@ def Augment_Image(image):
       
       cv2.rectangle(thresh2, (x, y), (x + w, y + h), (255, 0, 0), 1)
 
-
-      # print(x, y, w, h)
-
+      #Creating a new image based on the expanded rectangle
       roi = thresh[y:y+h, x:x+w]
 
-      # print(roi.shape())
-
-      # cv2.imshow('test',roi)
+      # cv2.imshow('Image',roi) #Debug - Displaying edited image.
       # cv2.waitKey(0)
       # cv2.destroyAllWindows()
 
-
+      #Resizing the new image.
       roi = cv2.resize(roi, (50, 50))
 
     cv2Image = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
