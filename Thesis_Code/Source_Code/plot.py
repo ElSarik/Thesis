@@ -62,6 +62,7 @@ def plot_training_results(training_results):
 			fig, axs = plt.subplots(2)
 			fig.tight_layout(pad=4.0)
 
+			#First axis for accuracy and validation accuracy.
 			axs[0].plot(training_results.history["accuracy"], label="train accuracy")
 			axs[0].plot(training_results.history["val_accuracy"], label="validation accuracy")
 			axs[0].set_ylabel("Accuracy")
@@ -69,6 +70,7 @@ def plot_training_results(training_results):
 			axs[0].legend(loc="lower right")
 			axs[0].set_title("Accuracy Evaluation")
 
+			#Second axis for loss and validation loss.
 			axs[1].plot(training_results.history["loss"], label="train error")
 			axs[1].plot(training_results.history["val_loss"], label="validation error")
 			axs[1].set_ylabel("Error")
@@ -76,5 +78,6 @@ def plot_training_results(training_results):
 			axs[1].legend(loc="upper right")
 			axs[1].set_title("Error Evaluation")
 
+			#Initializing the drawing process together with the given axis.
 			draw_figure_w_toolbar(window.FindElement(
 				'fig_cv').TKCanvas, fig, window.FindElement('controls_cv').TKCanvas)

@@ -16,8 +16,8 @@ from PIL import Image, ImageFont, ImageDraw
 def generate_store_dataset(selected_dataset):
 
 
-    exec_directory_root = os.path.dirname(os.path.realpath(__file__))
-    dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset'
+    exec_directory_root = os.path.dirname(os.path.realpath(__file__)) #Program execution location
+    dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset' #Dataset generation location
 
     img_width = 50  # x,y size of generated images
     img_height = 50
@@ -33,7 +33,7 @@ def generate_store_dataset(selected_dataset):
     lowercase_letters = []  # Lowercase letter codes
     directory_letters = []
 
-# ----------------LATIN CAPITAL----------------------
+    # ----------------LATIN CAPITAL----------------------
 
     if(selected_dataset == 'Latin'):
         for l in range (65, 91):
@@ -41,7 +41,7 @@ def generate_store_dataset(selected_dataset):
             directory_letters.append(chr(l))
             letters_in_image.append(chr(l))
 
-# ---------------LATIN CAPITAL & NUMBERS-------------
+    # ---------------LATIN CAPITAL & NUMBERS-------------
 
     if(selected_dataset == 'Latin_Nums'):
         for l in range (65, 91):
@@ -54,7 +54,7 @@ def generate_store_dataset(selected_dataset):
             directory_letters.append(chr(l))
             letters_in_image.append(chr(l))
 
-# ----------------GREEK CAPITAL----------------------
+    # ----------------GREEK CAPITAL----------------------
 
     if(selected_dataset == 'Greek'):
         for l in range (913, 930):
@@ -67,7 +67,7 @@ def generate_store_dataset(selected_dataset):
             directory_letters.append(chr(l))
             letters_in_image.append(chr(l))
 
-# ---------------GREEK CAPITAL & NUMBERS-------------
+    # ---------------GREEK CAPITAL & NUMBERS-------------
 
     if(selected_dataset == 'Greek_Nums'):
         for l in range (913, 930):
@@ -85,7 +85,7 @@ def generate_store_dataset(selected_dataset):
             directory_letters.append(chr(l))
             letters_in_image.append(chr(l))
 
-# ----------------NUMBERS---------------------------
+    # ----------------NUMBERS---------------------------
 
     if(selected_dataset == 'Nums'):
         for l in range (48, 58):  # Numbers
@@ -93,7 +93,7 @@ def generate_store_dataset(selected_dataset):
             directory_letters.append(chr(l))
             letters_in_image.append(chr(l))
 
-# ------------------------------------------------
+    # ------------------------------------------------
     
     # if(selected_dataset == 'Special_chars'): # NOT CURRENTLY USED
 
@@ -113,7 +113,7 @@ def generate_store_dataset(selected_dataset):
     #     directory_letters.append('colon')
     #     letters_in_image.append(chr(58))
 
-# ------------------------------------------------
+    # ------------------------------------------------
 
     try:
         shutil.rmtree(dataset_directory_root)

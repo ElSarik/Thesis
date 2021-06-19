@@ -111,7 +111,7 @@ def main():
 			   GUI.Column(select_dataset, visible=False, key='-Select_Dataset-')]]
 
 
-	window = GUI.Window('Optical Character Recognition Demo', layout)
+	window = GUI.Window('OCR-Thesis Demo', layout)
 
 	dataset = ''
 
@@ -154,9 +154,9 @@ def main():
 
 	    			LoadModel(model_path, classes_path)
 	    		else:
-	    			GUI.popup('The model cannot be found on the specified path.', font=font)
+	    			GUI.popup('The model cannot be found on the specified path.', font=font, title='Error!')
 	    	else:
-	    		GUI.popup('The path seems to be invalid.', font=font)
+	    		GUI.popup('The path seems to be invalid.', font=font, title='Error!')
 
 	    if event == 'load_model_cancel':
 	    	window[f'-Select_Model-'].update(visible=False)
@@ -179,14 +179,14 @@ def main():
 	    					  '- Press "Q" to finalize your selection and proceed with the recognition.\n'
 	    					  '- You may also resize the window if needed.\n\n'
 	    					  'Please not that the window will stay open until the program is either killed '
-	    					  'or the "Q" key has been pressed!', font=font)
+	    					  'or the "Q" key has been pressed!', font=font, title='Instruction.')
 	    			window[f'-Select_Image-'].update(visible=False)
 	    			Result, selected_images = selection(image_path)
 	    			break
 	    		else:
-	    			GUI.popup('The image cannot be found on the specified path.', font=font)
+	    			GUI.popup('The image cannot be found on the specified path.', font=font, title='Error!')
 	    	else:
-	    		GUI.popup('The path seems to be invalid.', font=font)
+	    		GUI.popup('The path seems to be invalid.', font=font, title='Error!')
 
 	    if event == 'load_image_cancel':
 	    	window[f'-Select_Image-'].update(visible=False)
@@ -228,7 +228,6 @@ def main():
 		generate_store_dataset(dataset)
 
 	window.close()
-
 
 	Results = Result.split('\n')
 

@@ -14,7 +14,7 @@ from tensorflow.keras.preprocessing.image import img_to_array, load_img, ImageDa
 
 from tensorflow.keras.utils import to_categorical
 
-from plot import plot_history
+from plot import plot_training_results
 
 import numpy as np
 from numpy import save
@@ -32,18 +32,19 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 
 	global model
 
-	batch = 22
+	batch = 22 #Images batch size.
 
-	input_shape = (img_width, img_height, 3)
+	input_shape = (img_width, img_height, 3) #Default (50, 50, 3)
 
-	labels = os.listdir(dataset_directory_root) 
+	labels = os.listdir(dataset_directory_root) #Label names of the images.
+												#Taken from the folder names.
 
+	Accuracy_Threshold = 0.9999 #Given threshold for accuracy
+	loss_threshold = 0.02 #Given threshold for loss
 
-	Accuracy_Threshold = 0.9999
-	loss_threshold = 0.02
-	epochs = 0
+	epochs = 0 #Epochs initialization
 
-	# MODEL 1
+	# =============== MODEL 1 ===========================
 
 	# model = keras.Sequential([
 	# 	layers.Conv2D(32, (3,3), input_shape=input_shape),
@@ -66,7 +67,7 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	# 	layers.Activation('softmax'), #softmax / sigmoid
 	# ])
 
-	# MODEL 2
+	# ================== MODEL 2 ===========================
 
 	# model = keras.Sequential()
 	# model.add(layers.Conv2D(32, kernel_size=(3,3), activation = 'relu', input_shape = input_shape))
@@ -78,7 +79,7 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	# model.add(keras.layers.Dropout(0.5))
 	# model.add(keras.layers.Dense(len(labels), activation='softmax'))
 
-	# MODEL 3
+	# =============== MODEL 3 =============================
 
 	# img_input = layers.Input(shape=input_shape)
 	# x = layers.Conv2D(32, 3, activation='relu')(img_input)
@@ -93,24 +94,24 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 
 	# model = Model(img_input, output)
 
-	# MODEL 4
+	# ================ MODEL 4 =============================
 
 	# model = keras.Sequential([
- #        keras.Input(shape=input_shape),
- #        layers.Conv2D(8, kernel_size=(3, 3), kernel_regularizer=l1_l2(), activation="relu"),
- #        layers.MaxPooling2D(pool_size=(2, 2)),
- #        layers.Dropout(0.3),
+	# keras.Input(shape=input_shape),
+	# layers.Conv2D(8, kernel_size=(3, 3), kernel_regularizer=l1_l2(), activation="relu"),
+	# layers.MaxPooling2D(pool_size=(2, 2)),
+	# layers.Dropout(0.3),
 
- #        layers.Conv2D(16, kernel_size=(3, 3), kernel_regularizer=l1_l2(), activation="relu"),
- #        layers.MaxPooling2D(pool_size=(2, 2)),
- #        layers.Dropout(0.3),
+	# layers.Conv2D(16, kernel_size=(3, 3), kernel_regularizer=l1_l2(), activation="relu"),
+	# layers.MaxPooling2D(pool_size=(2, 2)),
+	# layers.Dropout(0.3),
 
- #        layers.Flatten(),
- #        layers.Dropout(0.5),
- #        layers.Dense(len(labels), activation="softmax"),
- #    ])
+	# layers.Flatten(),
+	# layers.Dropout(0.5),
+	# layers.Dense(len(labels), activation="softmax"),
+	# ])
 
- 	# MODEL 5
+ 	# ================ MODEL 5 ===========================
 
 	model = keras.Sequential()
 	# add Convolutional layers
@@ -132,8 +133,10 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	model.add(layers.Dense(len(labels), activation='softmax'))
 
 
-
-
+	#Creating a dataset that will retrieve
+	#batches of images into training and 
+	#validation sets that will be forwarded
+	#to the model during training.
 	datagen = ImageDataGenerator(
 			rescale = 1. / 255,
 			validation_split = 0.3,
@@ -164,26 +167,32 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 			subset = 'validation',
 		)
 
+	#Defining the model callbacks.
 	class CallBack(tf.keras.callbacks.Callback):
+		#Callbacks act as a way of early stopping the training
+		#once the model has reached accuracy and loss within
+		#a specified threshold.
 		def on_epoch_end(self, epoch, logs={}):
 			if((logs.get('accuracy') > Accuracy_Threshold) & (logs.get('loss') < loss_threshold) 
 				& (logs.get('val_accuracy') > Accuracy_Threshold) & (logs.get('val_loss') < loss_threshold)):
 				self.model.stop_training = True
 
+	#Initiating the model callbacks.
 	callbacks = CallBack()
 
+	#The model will be compiled with the following parameters.
 	model.compile(
 		loss='categorical_crossentropy',
 		optimizer = keras.optimizers.Adam(learning_rate = 0.0005), #rmsprop, adam, SGD
 		metrics = ['accuracy']
 	)
 
-#------------------------------------------------------
 
 	GUI.theme('Light Blue 1')
 
 	font = ('Arial', 13)
 
+	#Creating a new GUI window.
 	training_prompt_text = [[GUI.Text('The training images have been generated.', font=font)],
 							[GUI.Text('On the next screen you will be asked to type a number of epochs.', font=font)],
 							[GUI.Text('When the training is complete, the results will appear\n'
@@ -218,45 +227,62 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 			   GUI.Column(insert_epoch, visible=False, key='-Insert_Epoch-'),
 			   GUI.Column(training_in_progress, visible=False, key='-Training_In_Progress-')]]
 
-	window = GUI.Window('Optical Character Recognition Demo', layout)
+	window = GUI.Window('OCR-Thesis Demo', layout)
 
 	while True:
+		#Reading events and values from the GUI window.
 		event, values = window.read()
 
+		#Closing the GUI window terminates the program.
 		if event == GUI.WIN_CLOSED or event == 'Cancel':
 			break
 
+		#Pressing the button 'continue' changes the GUI window layout.
 		if event == 'continue':
 			window[f'-Training_Prompt-'].update(visible=False)
 			window[f'-Insert_Epoch-'].update(visible=True)
 
-		if event == 'input' and values['input'] and values['input'][-1] not in ('0123456789.'):
-			window['input'].update(values['input'][:-1]) # Characters that are not digits will not appear in the input box.
+		#Characters that are not digits will not appear in the input epoch box.
+		if event == 'input' and values['input'] and values['input'][-1] not in ('0123456789'):
+			window['input'].update(values['input'][:-1])
 
+		#Pressing the 'ok' button to validate the inserted epoch
+		#checks that the input is not empty and that it is not a 0
 		if event == 'ok':
 			if values['input'] != '':
-				epochs = int(values['input'])
+				if values['input'] == '0':
+					#Displaying popup warning if input is 0.
+					GUI.popup('The training epochs may not be 0!', font=font, title='Error!')
+				else:
+					epochs = int(values['input'])
 
-				window[f'-Insert_Epoch-'].update(visible=False)
-				window[f'-Training_In_Progress-'].update(visible=True)
+					#Changing to the -Training_In_Progress- layout
+					window[f'-Insert_Epoch-'].update(visible=False)
+					window[f'-Training_In_Progress-'].update(visible=True)
 
-				history = model.fit(ds_train, validation_data = ds_validate, epochs = epochs, verbose = 2, callbacks=[callbacks])
-				print('\n\nTraining is Complete!')
+					#Initiating the training with the specified epochs.
+					training_results = model.fit(ds_train, validation_data = ds_validate, epochs = epochs, verbose = 2, callbacks=[callbacks])
+					print('\n\nTraining is Complete!')
 
+			#Displaying popup warning if input is empty.
+			else:
+				GUI.popup('The input may not be empty!', font=font, title='Error!')
+
+		#If buttons 'finish' or 'exit' have been pressed,
+		#the program terminates.
 		if ((event == 'finish') | (event == 'Exit')):
 			break
 
-
+	#Terminating the GUI Window.
 	window.close()
 
-#----------------------------------------------------
 	try:
-		plot_history(history)
+		#Initializing the results graph creation.
+		plot_training_results(training_results)
 	except:
 		return
 
-#--------------------------------------------------------------------
-
+	#Creating a new GUI Window
 	save_model_prompt = [[GUI.Text('Type a name for your model', font=font)],
 				  		 [GUI.Input(key='ModelName')],
 				  		 [GUI.Button('Save Model', key='ModelSave', font=font, pad=(15,0)), GUI.Cancel(key='Cancel', font=font, pad=(15,0))]]
@@ -275,51 +301,62 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	layout = [[GUI.Column(save_model_prompt, visible = True, key='-Save_Model-'),
 			   GUI.Column(model_saved, visible = False, key='-Model_Saved-')]]
 
-	window = GUI.Window('Optical Character Recognition Demo', layout)
+	window = GUI.Window('OCR-Thesis Demo', layout)
 
 	model_name = ''
 
+	#GUI Window existence loop.
 	while True:
+		#Reading GUI window events and values.
 		event, values = window.read()
 		
+		#Closing the GUI window terminates the program.
 		if event == GUI.WIN_CLOSED:
 			break
 
+		#Saving the model under the user-given name.
 		if event == 'ModelSave':
 			model_name = values['ModelName']
+			#The name must not be empty.
 			if (model_name != ''):
-
+				#The name must not contain these invalid characters.
 				if (re.search('[\\/:"*?<>|]+', model_name)):
+					#Display GUI popup.
+					GUI.popup('The name is invalid.', font=font, title='Error!')
 
-					GUI.popup('The name is invalid.', font=font)
 				else:
-
+					#Preparing the model and classes names.
 					final_model_name = model_name + '.h5'
 					classes_name = model_name + '.npy'
-
+					#Moving directory over to the 'Models' folder.
 					os.chdir(exec_directory_root + '/Models')
-					model.save(final_model_name) #Save a trained model
+					model.save(final_model_name) #Saving the model.
 
+					#Saving the model classes.
 					classes = ds_train.class_indices
 					model_classes = np.array(classes)
 					save(classes_name, model_classes)
 
+					#Changing the window scene to '-Model_Saved-'
 					window[f'-Save_Model-'].update(visible=False)
 					window[f'-Model_Saved-'].update(visible=True)
 
 			else:
-				GUI.popup('The name may not be empty.', font=font)
+				#Display GUI popup.
+				GUI.popup('The name may not be empty.', font=font, title='Error!')
 
+		#Pressing the buttons 'Cancel' and 'Exit' closes
+		#the GUI window and terminates the program.
 		if ((event == 'Cancel') | (event == 'Exit')):
 			break
 
+		#Restarting the program.
 		if event == 'model_save_finish':
 			os.execv(sys.executable, ['python'] + sys.argv)
 
+	#Terminating the GUI Window.
 	window.close()
 
-
-#--------------------------------------------------------------------
 
 
 def Predict(images):
@@ -328,21 +365,22 @@ def Predict(images):
 
 	output_label = ''
 
+	#Extracting the class names from the classes file.
 	classes = np.load(model_classes_from_file, allow_pickle=True)
 	classes_list = classes.tolist()
 	classes_names = []
 	for c in classes_list:
 		classes_names.append(c)
 
+	#Preparing the detected images for prediction.
 	processed_images = ImagePreProcessing(images)
 
+	#Predicting each character image and adding the result to a string.
 	for pi in processed_images:
-
 		prediction = model.predict(pi)
 		classification = prediction.argmax(axis = -1)
 		output_label = output_label + classes_names[int(classification)]
 
-	# print(output_label)
 	return output_label
 
 
@@ -350,10 +388,9 @@ def LoadModel(model_path, classes_path):
 	global model
 	global model_classes_from_file
 
-	model = load_model(model_path)	#OCR_MODEL_1.h5
+	#Loading model and storing the classes path.
+	model = load_model(model_path)
 	model_classes_from_file = classes_path
-
-	# MakePrediction()
 
 
 
@@ -362,12 +399,12 @@ def ImagePreProcessing(images):
 	processed_images = []
 
 	for i in images:
+		#Sharpening the images and then converting it back to BGR.
 		gray = cv2.cvtColor(i, cv2.COLOR_BGR2GRAY)	# Converts the image to grayscale
-
 		thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]	# Inverts the image
-
 		RGB_thresh = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
 		
+		#Converting the images into an array and adding them to a list.
 		img_arr = img_to_array(RGB_thresh)
 		img_arr = img_arr / 255
 		img_arr = np.expand_dims(img_arr, axis = 0)
@@ -375,9 +412,6 @@ def ImagePreProcessing(images):
 		# cv2.imshow('Processed Image', RGB_thresh)	#Debug - Display processed image
 		# cv2.waitKey(0)
 		# cv2.destroyAllWindows()
-
-		# print(img_arr.shape)
-		# img_arr = img_arr.reshape(-1, 50, 50, 3)
 
 		processed_images.append(img_arr)
 
