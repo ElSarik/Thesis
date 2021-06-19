@@ -179,7 +179,7 @@ def main():
 	    					  '- Press "Q" to finalize your selection and proceed with the recognition.\n'
 	    					  '- You may also resize the window if needed.\n\n'
 	    					  'Please not that the window will stay open until the program is either killed '
-	    					  'or the "Q" key has been pressed!', font=font, title='Instruction.')
+	    					  'or the "Q" key has been pressed!', font=font, title='Instructions')
 	    			window[f'-Select_Image-'].update(visible=False)
 	    			Result, selected_images = selection(image_path)
 	    			break
