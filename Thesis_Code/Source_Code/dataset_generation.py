@@ -21,7 +21,9 @@ def generate_store_dataset(selected_dataset):
 
     img_width = 50  # x,y size of generated images
     img_height = 50
-    font_name_array = ['arial', 'times', 'bahnschrift', 'cambria', 'constan', 'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic'] #List of fonts used
+    font_name_array = ['arial', 'times', 'bahnschrift', 'cambria', 'constan', 
+                       'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic',
+                       'pala', ] #List of fonts used
     font_size = 35  # Font size of each alphanumeric
 
     # Unicode Greek Letter Codes = 902-974 (Includes a couple of empty codes!)
@@ -103,35 +105,52 @@ def generate_store_dataset(selected_dataset):
     #Creating the database folder.
     os.mkdir(dataset_directory_root)
 
-    for l in range (0, len(letters)):  # For each character combination...
+    # For each character combination...
+    for l in range (0, len(letters)):
 
         counter = 1
 
-        letter_directory = dataset_directory_root + '/' + directory_letters[l] # Setting up the directory path for each character
-        os.mkdir(letter_directory)  # Creating the directories
+        # Setting up the directory path for each character
+        letter_directory = dataset_directory_root + '/' + directory_letters[l]
+        
+        # Creating the directories
+        os.mkdir(letter_directory)
 
-        for font in font_name_array:  # And for each font on the font array
+        # And for each font on the font array
+        for font in font_name_array:
+            try:
+                font = ImageFont.truetype(font, font_size)
 
-            picture_name = letters[l] + '_' + str(counter) + '.jpg'  # Setting up the picture name
+                # Setting up the picture name
+                picture_name = letters[l] + '_' + str(counter) + '.jpg'
 
-            image = Image.new('RGB', (img_width,img_height)) # Create a new RGB image for every character with size x,y (PIL)
+                # Create a new RGB image for every character with size x,y (PIL)
+                image = Image.new('RGB', (img_width,img_height))
 
-            draw = ImageDraw.Draw(image)  # Enable drawing on the image
-            font = ImageFont.truetype(font, font_size)
-            draw.text((10,int(img_height/(font_size/2))), letters_in_image[l], fill = (255,255,255), font = font)  # Draw the character on the image
+                # Enable drawing on the image
+                draw = ImageDraw.Draw(image)
 
-            image = Augment_Image(image)
+                # Draw the character on the image
+                draw.text((10,int(img_height/(font_size/2))), letters_in_image[l], 
+                fill = (255,255,255), font = font)
 
-            os.chdir(letter_directory) # Moving the directory to the character folder
-            image.save(picture_name)  # Using PIL to save the image
+                image = Augment_Image(image)
 
-            counter = counter + 1
+                # Moving the directory to the character folder
+                os.chdir(letter_directory)
+
+                # Using PIL to save the image
+                image.save(picture_name)
+
+                counter = counter + 1
+            except:
+                pass
 
 
     TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)
 
-
-def Augment_Image(image): #Formating and centering the character images
+#Formating and centering the character images
+def Augment_Image(image):
 
     cv2Image = np.array(image)
     cv2Image = cv2.cvtColor(cv2Image, cv2.COLOR_RGB2BGR)
