@@ -21,9 +21,43 @@ def generate_store_dataset(selected_dataset):
 
     img_width = 50  # x,y size of generated images
     img_height = 50
-    font_name_array = ['arial', 'times', 'bahnschrift', 'cambria', 'constan', 
-                       'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic',
-                       'pala', ] #List of fonts used
+
+    #heavy version
+    #.ttf & .ttc files based on windows 10 fonts: https://docs.microsoft.com/en-us/typography/fonts/windows_10_font_list
+    font_name_array = ['arial', 'ariali', 'arialbd', 'arialbi', 'ariblk',
+                       'bahnschrift',
+                       'calibril', 'calibrili', 'calibri', 'calibrii', 'calibrib', 'calibriz',
+                       'cambria', 'cambriai', 'cambriab', 'cambriaz',
+                       'comic', 'comici', 'comicbd', 'comicz',
+                       'consola', 'consolai', 'consolab', 'consolaz',
+                       'constan', 'constani', 'constanb', 'constanz',
+                       'corbell', 'corbelli', 'corbel', 'corbeli', 'corbelb', 'corbelz',
+                       'cour', 'couri', 'courbd', 'courbi',
+                       'framd', 'framdit',
+                       'georgia', 'georgiai', 'georgiab', 'georgiaz',
+                       'impact',
+                       'lucon', 'l_10646',
+                       'malgun', 'malgunbd', 'malgunsl',
+                       'micross',
+                       'pala', 'palai', 'palab', 'palabi',
+                       'segoepr', 'segoeprb', 'segoesc', 'segoescb',
+                       'segoeuil', 'seguili', 'segoeuisl', 'seguisli',
+                       'segoeui', 'segoeuii', 'seguisb', 'seguisbi', 'segoeuib', 'segoeuiz',
+                       'seguibl', 'seguibli', 'seguisym',
+                       'simsun',
+                       'sylfaen',
+                       'tahoma', 'tahomabd', 
+                       'times', 'timesi', 'timesbd', 'timesbi',
+                       'trebuc', 'trebucit', 'trebucbd', 'trebucbi',
+                       'verdana', 'verdanai', 'verdanab', 'verdanaz']
+
+    #light version with fewer fonts.
+    # font_name_array = ['arial', 'times', 'timesi', 'timesbd', 'timesbi', 
+    #                    'bahnschrift', 'cambria', 'constan', 
+    #                    'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic',
+    #                    'pala', 'verdana', 'verdanai', 'verdanab', 'verdanaz',
+    #                    'trebuc', 'trebucit', 'trebucbd', 'trebucbi']
+
     font_size = 35  # Font size of each alphanumeric
 
     # Unicode Greek Letter Codes = 902-974 (Includes a couple of empty codes!)
@@ -117,9 +151,9 @@ def generate_store_dataset(selected_dataset):
         os.mkdir(letter_directory)
 
         # And for each font on the font array
-        for font in font_name_array:
+        for font_name in font_name_array:
             try:
-                font = ImageFont.truetype(font, font_size)
+                font = ImageFont.truetype(font_name, font_size)
 
                 # Setting up the picture name
                 picture_name = letters[l] + '_' + str(counter) + '.jpg'
@@ -145,6 +179,7 @@ def generate_store_dataset(selected_dataset):
                 counter = counter + 1
             except:
                 pass
+                
 
 
     TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)

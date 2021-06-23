@@ -139,7 +139,7 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	#to the model during training.
 	datagen = ImageDataGenerator(
 			rescale = 1. / 255,
-			validation_split = 0.3,
+			validation_split = 0.15,
 			rotation_range=8,
 			width_shift_range=0.1,
 			height_shift_range=0.1,
