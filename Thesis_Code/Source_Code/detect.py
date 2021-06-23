@@ -225,9 +225,6 @@ def contour_display(contours, image_num):	# Displays the detected contours on th
 		pass
 
 	for sr in sorted_rectangles:
-		# (x,y,w,h) = cv2.boundingRect(c) # Bounding the alphanumeric contours to a rectangle and receiving its coordinates
-
-		# mask = np.zeros(selection_img_copy.shape[:2], dtype="uint8")
 
 		x = sr[0]
 		y = sr[1]
