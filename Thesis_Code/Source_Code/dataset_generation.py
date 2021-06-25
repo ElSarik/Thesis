@@ -139,7 +139,7 @@ def generate_store_dataset(selected_dataset):
     #Creating the database folder.
     os.mkdir(dataset_directory_root)
 
-    # For each character combination...
+
     for l in range (0, len(letters)):
 
         counter = 1
@@ -150,7 +150,6 @@ def generate_store_dataset(selected_dataset):
         # Creating the directories
         os.mkdir(letter_directory)
 
-        # And for each font on the font array
         for font_name in font_name_array:
             try:
                 font = ImageFont.truetype(font_name, font_size)
