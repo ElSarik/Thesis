@@ -12,15 +12,15 @@ from predict import TrainModel
 
 from PIL import Image, ImageFont, ImageDraw
 
+img_width = 50  # x,y size of generated images
+img_height = 50
+
 
 def generate_store_dataset(selected_dataset):
 
 
     exec_directory_root = os.path.dirname(os.path.realpath(__file__)) #Program execution location
     dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset' #Dataset generation location
-
-    img_width = 50  # x,y size of generated images
-    img_height = 50
 
     #heavy version
     #.ttf & .ttc files based on windows 10 fonts: https://docs.microsoft.com/en-us/typography/fonts/windows_10_font_list
@@ -186,6 +186,9 @@ def generate_store_dataset(selected_dataset):
 #Formating and centering the character images.
 def Augment_Image(image):
 
+    global img_height
+    global img_width
+
     #Converting the image from PIL to CV2 format.
     cv2Image = np.array(image)
     cv2Image = cv2.cvtColor(cv2Image, cv2.COLOR_RGB2BGR)
@@ -225,7 +228,7 @@ def Augment_Image(image):
       # cv2.destroyAllWindows()
 
       #Resizing the new image.
-      roi = cv2.resize(roi, (50, 50))
+      roi = cv2.resize(roi, (img_width, img_height))
 
     cv2Image = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
     pilImage = Image.fromarray(roi)
