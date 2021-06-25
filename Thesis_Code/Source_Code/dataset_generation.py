@@ -18,6 +18,9 @@ img_height = 50
 
 def generate_store_dataset(selected_dataset):
 
+    global img_width
+    global img_height
+
 
     exec_directory_root = os.path.dirname(os.path.realpath(__file__)) #Program execution location
     dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset' #Dataset generation location
