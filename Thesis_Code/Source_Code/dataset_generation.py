@@ -183,16 +183,19 @@ def generate_store_dataset(selected_dataset):
 
     TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)
 
-#Formating and centering the character images
+#Formating and centering the character images.
 def Augment_Image(image):
 
+    #Converting the image from PIL to CV2 format.
     cv2Image = np.array(image)
     cv2Image = cv2.cvtColor(cv2Image, cv2.COLOR_RGB2BGR)
 
+    #Grayscaling the image and getting its threshold.
     gray = cv2.cvtColor(cv2Image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    thresh2 = thresh.copy()
 
+    #Morphologically closing the image to connect
+    #all the character parts.
     kernel = np.ones((13,13),np.uint8)
     closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
@@ -213,8 +216,6 @@ def Augment_Image(image):
           x = 0
       if((y-3) < 0):
           y = 0
-      
-      cv2.rectangle(thresh2, (x, y), (x + w, y + h), (255, 0, 0), 1)
 
       #Creating a new image based on the expanded rectangle
       roi = thresh[y:y+h, x:x+w]
