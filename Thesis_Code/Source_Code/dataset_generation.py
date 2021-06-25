@@ -12,15 +12,18 @@ from predict import TrainModel
 
 from PIL import Image, ImageFont, ImageDraw
 
+img_width = 50  # x,y size of generated images
+img_height = 50
+
 
 def generate_store_dataset(selected_dataset):
+
+    global img_width
+    global img_height
 
 
     exec_directory_root = os.path.dirname(os.path.realpath(__file__)) #Program execution location
     dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset' #Dataset generation location
-
-    img_width = 50  # x,y size of generated images
-    img_height = 50
 
     #heavy version
     #.ttf & .ttc files based on windows 10 fonts: https://docs.microsoft.com/en-us/typography/fonts/windows_10_font_list
@@ -183,16 +186,22 @@ def generate_store_dataset(selected_dataset):
 
     TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)
 
-#Formating and centering the character images
+#Formating and centering the character images.
 def Augment_Image(image):
 
+    global img_height
+    global img_width
+
+    #Converting the image from PIL to CV2 format.
     cv2Image = np.array(image)
     cv2Image = cv2.cvtColor(cv2Image, cv2.COLOR_RGB2BGR)
 
+    #Grayscaling the image and getting its threshold.
     gray = cv2.cvtColor(cv2Image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    thresh2 = thresh.copy()
 
+    #Morphologically closing the image to connect
+    #all the character parts.
     kernel = np.ones((13,13),np.uint8)
     closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
@@ -213,8 +222,6 @@ def Augment_Image(image):
           x = 0
       if((y-3) < 0):
           y = 0
-      
-      cv2.rectangle(thresh2, (x, y), (x + w, y + h), (255, 0, 0), 1)
 
       #Creating a new image based on the expanded rectangle
       roi = thresh[y:y+h, x:x+w]
@@ -224,7 +231,7 @@ def Augment_Image(image):
       # cv2.destroyAllWindows()
 
       #Resizing the new image.
-      roi = cv2.resize(roi, (50, 50))
+      roi = cv2.resize(roi, (img_width, img_height))
 
     cv2Image = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
     pilImage = Image.fromarray(roi)
