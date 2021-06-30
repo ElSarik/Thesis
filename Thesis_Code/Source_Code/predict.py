@@ -133,7 +133,7 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 	model.add(layers.Dense(len(labels), activation='softmax'))
 
 
-	#Creating a dataset that will retrieve
+	#Creating a data generator that will retrieve
 	#batches of images into training and 
 	#validation sets that will be forwarded
 	#to the model during training.
@@ -169,7 +169,9 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 
 	#Defining the model callbacks.
 	class CallBack(tf.keras.callbacks.Callback):
-		#Callbacks act as a way of early stopping the training
+		#Callbacks act as functions that get executed during
+		#specific moments during training. 
+		#Here they work as a way of early stopping the training
 		#once the model has reached accuracy and loss within
 		#a specified threshold.
 		def on_epoch_end(self, epoch, logs={}):
