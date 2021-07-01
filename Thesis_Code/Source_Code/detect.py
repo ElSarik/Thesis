@@ -122,7 +122,7 @@ def display_rectangles():	# Creates and displays a new image based on the select
 
 
 
-def image_processing():	# Processes the selected images #!!!!~~HEAVILY WORK IN PROGRESS~~!!!!
+def image_processing():	# Processes the selected images
 	
 	global selection_images
 	global filtered_selection_images
@@ -169,7 +169,7 @@ def contour_detection(): # Detects contours inside the processed images
 
 		cnts, hierarchy = cv2.findContours(pi, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # Detects contours
 
-		Image_Result = contour_display(cnts, image_num)	# Sends the detected contours to contour_display with the image number
+		Image_Result = character_extraction(cnts, image_num)	# Sends the detected contours to character_extraction with the image number
 
 		image_num = image_num + 1
 
@@ -184,7 +184,7 @@ def contour_detection(): # Detects contours inside the processed images
 			Result = Result + '\n' + Image_Result
 	return Result
 
-def contour_display(contours, image_num):	# Displays the detected contours on the image
+def character_extraction(contours, image_num):	# Displays the detected contours on the image
 
 	global filtered_selection_images
 
@@ -200,6 +200,8 @@ def contour_display(contours, image_num):	# Displays the detected contours on th
 
 	for sr in sorted_rectangles:
 
+		#Expanding the image width and height
+		#similarly to the Augment_Image process
 		x = sr[0]
 		y = sr[1]
 		w = sr[2]
@@ -215,15 +217,19 @@ def contour_display(contours, image_num):	# Displays the detected contours on th
 		if((y-3) < 0):
 			y = 0
 
+		#Creating Regions of Interest around the character
 		roi = selection_img[y:y+h, x:x+w]
 
+		#Calculating the avelrage width of all characters
 		totalWidth = totalWidth + roi.shape[1]
 
 	try:
-		averageWidth = int(int(totalWidth / len(sorted_rectangles)) + (0.25 * int(totalWidth / len(sorted_rectangles)))) # Avg + 25% of Avg
+		# Avg + 25% of Avg
+		averageWidth = int(int(totalWidth / len(sorted_rectangles)) + (0.25 * int(totalWidth / len(sorted_rectangles))))
 	except:
 		pass
 
+	#Second loop to split characters if necessary
 	for sr in sorted_rectangles:
 
 		x = sr[0]
@@ -243,21 +249,28 @@ def contour_display(contours, image_num):	# Displays the detected contours on th
 
 
 		try:
-
-			roi = selection_img[y:y+h, x:x+w] # Create a smaller image to display each individual alphanumeric
+			 #Creating the final region of interest
+			roi = selection_img[y:y+h, x:x+w]
 			
+			#If the image width exceeds the average
 			if (roi.shape[1] > averageWidth):
 
+				#Splitting the image into 2 images
 				roi_1 = selection_img[y:y+h, x:int(x + w/2)]
 				roi_2 = selection_img[y:y+h, x + int(w/2):x + w]
 
+				#Resizing the 2 images to the proper size
 				roi_1 = cv2.resize(roi_1, (50, 50))
 				roi_2 = cv2.resize(roi_2, (50, 50))
 
+				#Adding the images to a list for recognition
 				rectangled_letters.append(roi_1)
 				rectangled_letters.append(roi_2)
 
 			else:
+				#Image was below the average width,
+				#resizing and appending the image
+				#with no changes to it.
 				roi = cv2.resize(roi, (50, 50))
 				rectangled_letters.append(roi)
 		except:
