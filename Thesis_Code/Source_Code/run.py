@@ -128,7 +128,7 @@ def main():
 	    	window[f'-Load_Create-'].update(visible=True)
 
 	    if event == 'URL':
-	    	webbrowser.open('https://github.com/ElSarik/Bachelor_Thesis_OCR')
+	    	webbrowser.open('https://github.com/ElSarik/Thesis')
 
 		# ----------------Load_Create--------------------------
 
