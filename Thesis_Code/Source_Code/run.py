@@ -51,7 +51,7 @@ def main():
 				  	 [GUI.Text('It was written to the best of my knowledge, though I can not guarantee that it\n'
 						 	   'is completely free of errors.', font=font)],
 				  	 [GUI.Text('')],
-				  	 [GUI.Text('The source code can be found here:', font=font), GUI.Text('GitHub link', tooltip='https://github.com/ElSarik/Bachelor_Thesis_OCR', enable_events=True, font=('Arial', 13, 'underline'), key=f'URL')],
+				  	 [GUI.Text('The source code can be found here:', font=font), GUI.Text('GitHub link', tooltip='https://github.com/ElSarik/Thesis', enable_events=True, font=('Arial', 13, 'underline'), key=f'URL')],
 				  	 [GUI.Text('')],
 				  	 [GUI.Text('University of Ioannina - Department of Computer Engineering - Arta, Greece', font=font)],
 				  	 [GUI.Text('© Sarikakis Elias - Ioannes, 2021\n'
