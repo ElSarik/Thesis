@@ -28,7 +28,7 @@ model = None
 model_classes_from_file = None
 
 
-def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height):
+def TrainModel(dataset_directory_root, testset_directory_root, exec_directory_root, img_width, img_height):
 
 	global model
 
@@ -147,6 +147,8 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 			zoom_range=0.1,
 		)
 
+	testgen = ImageDataGenerator()
+
 	ds_train = datagen.flow_from_directory(
 			dataset_directory_root, 
 			target_size = (img_width, img_height),
@@ -166,6 +168,12 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 			seed = 123,
 			subset = 'validation',
 		)
+
+	ds_test = testgen.flow_from_directory(
+			testset_directory_root,
+			target_size = (img_width, img_height),
+			batch_size = batch,
+			class_mode = 'categorical',)
 
 	#Defining the model callbacks.
 	class CallBack(tf.keras.callbacks.Callback):
@@ -265,6 +273,12 @@ def TrainModel(dataset_directory_root, exec_directory_root, img_width, img_heigh
 					#Initiating the training with the specified epochs.
 					training_results = model.fit(ds_train, validation_data = ds_validate, epochs = epochs, verbose = 2, callbacks=[callbacks])
 					print('\n\nTraining is Complete!')
+					print('===============================')
+					print('\nEvaluating the model:')
+
+					model.evaluate(ds_test, verbose = 2)
+
+					print('\n\nEvaluation is Complete!')
 
 			#Displaying popup warning if input is empty.
 			else:

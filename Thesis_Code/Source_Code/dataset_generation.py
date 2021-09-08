@@ -25,6 +25,8 @@ def generate_store_dataset(selected_dataset):
     exec_directory_root = os.path.dirname(os.path.realpath(__file__)) #Program execution location
     dataset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Dataset' #Dataset generation location
 
+    testset_directory_root = os.path.dirname(os.path.realpath(__file__)) + '/Test_Set' #Test set generation location
+
     #heavy version
     #.ttf & .ttc files based on windows 10 fonts: https://docs.microsoft.com/en-us/typography/fonts/windows_10_font_list
     # font_name_array = ['arial', 'ariali', 'arialbd', 'arialbi', 'ariblk',
@@ -60,6 +62,8 @@ def generate_store_dataset(selected_dataset):
                        'lucon', 'calibri', 'impact', 'segoepr', 'segoesc', 'comic',
                        'pala', 'verdana', 'verdanai', 'verdanab', 'verdanaz',
                        'trebuc', 'trebucit', 'trebucbd', 'trebucbi']
+
+    testset_fonts = ['consola', 'cour', 'georgia', 'micross', 'simsun', 'tahoma', 'malgun']
 
     font_size = 35  # Font size of each alphanumeric
 
@@ -136,11 +140,13 @@ def generate_store_dataset(selected_dataset):
     try:
         #Checking if a database folder exists.
         shutil.rmtree(dataset_directory_root)
+        shutil.rmtree(testset_directory_root)
     except:
         print('There was no dataset directory to reset - creating it now.')
 
     #Creating the database folder.
     os.mkdir(dataset_directory_root)
+    os.mkdir(testset_directory_root)
 
 
     for l in range (0, len(letters)):
@@ -181,10 +187,50 @@ def generate_store_dataset(selected_dataset):
                 counter = counter + 1
             except:
                 pass
+
+
+    for l in range (0, len(letters)):
+
+        counter = 1
+
+        # Setting up the directory path for each character
+        letter_directory = testset_directory_root + '/' + directory_letters[l]
+        
+        # Creating the directories
+        os.mkdir(letter_directory)
+
+        for font_name in testset_fonts:
+            try:
+                font = ImageFont.truetype(font_name, font_size)
+
+                # Setting up the picture name
+                picture_name = letters[l] + '_' + str(counter) + '.jpg'
+
+                # Create a new RGB image for every character with size x,y (PIL)
+                image = Image.new('RGB', (img_width,img_height))
+
+                # Enable drawing on the image
+                draw = ImageDraw.Draw(image)
+
+                # Draw the character on the image
+                draw.text((10,int(img_height/(font_size/2))), letters_in_image[l], 
+                fill = (255,255,255), font = font)
+
+                image = Augment_Image(image)
+
+                # Moving the directory to the character folder
+                os.chdir(letter_directory)
+
+                # Using PIL to save the image
+                image.save(picture_name)
+
+                counter = counter + 1
+            except:
+                pass
                 
 
 
-    TrainModel(dataset_directory_root, exec_directory_root, img_width, img_height)
+    TrainModel(dataset_directory_root, testset_directory_root, exec_directory_root, img_width, img_height)
 
 #Formating and centering the character images.
 def Augment_Image(image):
