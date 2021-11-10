@@ -139,7 +139,7 @@ def TrainModel(dataset_directory_root, testset_directory_root, exec_directory_ro
 	#to the model during training.
 	datagen = ImageDataGenerator(
 			rescale = 1. / 255,
-			validation_split = 0.15,
+			validation_split = 0.40,
 			rotation_range=8,
 			width_shift_range=0.1,
 			height_shift_range=0.1,
@@ -173,6 +173,7 @@ def TrainModel(dataset_directory_root, testset_directory_root, exec_directory_ro
 			testset_directory_root,
 			target_size = (img_width, img_height),
 			batch_size = batch,
+			shuffle = False,
 			class_mode = 'categorical',)
 
 	#Defining the model callbacks.
@@ -269,6 +270,11 @@ def TrainModel(dataset_directory_root, testset_directory_root, exec_directory_ro
 					#Changing to the -Training_In_Progress- layout
 					window[f'-Insert_Epoch-'].update(visible=False)
 					window[f'-Training_In_Progress-'].update(visible=True)
+
+					print('Summary of the model:\n')
+					print(model.summary())
+					print('\n===============================')
+					print('\nBeginning Training:\n')
 
 					#Initiating the training with the specified epochs.
 					training_results = model.fit(ds_train, validation_data = ds_validate, epochs = epochs, verbose = 2, callbacks=[callbacks])
